@@ -1,5 +1,7 @@
 # Commands
 
+npm init -y
+
 yarn add ts-node -D
 
 yarn tsc --init
