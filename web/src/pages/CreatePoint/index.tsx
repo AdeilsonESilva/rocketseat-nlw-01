@@ -1,6 +1,6 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import { Link, useHistory } from 'react-router-dom';
-import { FiArrowLeft } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+import { FiArrowLeft, FiCheckCircle } from 'react-icons/fi';
 import { Map, TileLayer, Marker } from 'react-leaflet';
 import { LeafletMouseEvent } from 'leaflet';
 import axios from 'axios';
@@ -50,7 +50,7 @@ const CreatePoints = () => {
     whatsapp: '',
   });
 
-  const history = useHistory();
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(position => {
@@ -150,9 +150,7 @@ const CreatePoints = () => {
 
     await api.post('points', data);
 
-    alert('Ponto de coleta criado!');
-
-    history.push('/');
+    setShowModal(true);
   };
 
   return (
@@ -283,6 +281,15 @@ const CreatePoints = () => {
 
         <button type="submit">Cadastrar ponto de coleta</button>
       </form>
+
+      {showModal && (
+        <div className="modal" style={{ overflowX: 'hidden' }}>
+          <Link to="/">
+            <FiCheckCircle />
+          </Link>
+          <h1>Cadastro concluído!</h1>
+        </div>
+      )}
     </div>
   );
 };
