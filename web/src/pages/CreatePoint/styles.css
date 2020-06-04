@@ -209,13 +209,17 @@
   width: 100%;
   height: 100%;
   z-index: 1000;
-  background-color: #0e0a14;
+  background-color: rgba(14, 10, 20, 0.95);
   display: flex;
   flex: 1;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
+
+/* .modal::-webkit-scrollbar {
+  display: none;
+} */
 
 .modal svg {
   width: 64px;

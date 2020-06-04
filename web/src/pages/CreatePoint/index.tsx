@@ -283,7 +283,7 @@ const CreatePoints = () => {
       </form>
 
       {showModal && (
-        <div className="modal" style={{ overflowX: 'hidden' }}>
+        <div className="modal">
           <Link to="/">
             <FiCheckCircle />
           </Link>
