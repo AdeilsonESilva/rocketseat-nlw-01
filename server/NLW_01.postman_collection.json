@@ -1,95 +1,158 @@
 {
-  "info": {
-    "_postman_id": "373d5533-dc5c-41ae-9ba7-c3c7cb9b86c0",
-    "name": "NLW",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-  },
-  "item": [
-    {
-      "name": "01",
-      "item": [
-        {
-          "name": "Listar itens",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "localhost:3333/items",
-              "host": ["localhost"],
-              "port": "3333",
-              "path": ["items"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Criar ponto de coleta",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"name\": \"Supermercado Lago\",\n    \"email\": \"contato@zap.com\",\n    \"whatsapp\": \"1999654564\",\n    \"latitude\": -46.23423,\n    \"longitude\": -32.982378,\n    \"city\": \"Campinas\",\n    \"uf\": \"SP\",\n    \"items\": [3]\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "localhost:3333/points",
-              "host": ["localhost"],
-              "port": "3333",
-              "path": ["points"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Lista pontos de coleta",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "localhost:3333/points?city=Campinas&uf=SP&items=1,2,3",
-              "host": ["localhost"],
-              "port": "3333",
-              "path": ["points"],
-              "query": [
-                {
-                  "key": "city",
-                  "value": "Campinas"
-                },
-                {
-                  "key": "uf",
-                  "value": "SP"
-                },
-                {
-                  "key": "items",
-                  "value": "1,2,3"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Lista ponto de coleta por id",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "localhost:3333/points/2",
-              "host": ["localhost"],
-              "port": "3333",
-              "path": ["points", "2"]
-            }
-          },
-          "response": []
-        }
-      ],
-      "protocolProfileBehavior": {}
-    }
-  ],
-  "protocolProfileBehavior": {}
+	"info": {
+		"_postman_id": "373d5533-dc5c-41ae-9ba7-c3c7cb9b86c0",
+		"name": "NLW",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01",
+			"item": [
+				{
+					"name": "Listar itens",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3333/items",
+							"host": [
+								"localhost"
+							],
+							"port": "3333",
+							"path": [
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar ponto de coleta",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Supermercado Lago",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "contato@zap.com",
+									"type": "text"
+								},
+								{
+									"key": "whatsapp",
+									"value": "1999654564",
+									"type": "text"
+								},
+								{
+									"key": "latitude",
+									"value": "-46.23423",
+									"type": "text"
+								},
+								{
+									"key": "longitude",
+									"value": "-32.982378",
+									"type": "text"
+								},
+								{
+									"key": "uf",
+									"value": "SP",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Campinas",
+									"type": "text"
+								},
+								{
+									"key": "items",
+									"value": "1,2, 3",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/home/adeilsonsilva/Desktop/photo-1477763858572-cda7deaa9bc5.jpeg"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3333/points",
+							"host": [
+								"localhost"
+							],
+							"port": "3333",
+							"path": [
+								"points"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lista pontos de coleta",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3333/points?city=Campinas&uf=SP&items=1,2,3",
+							"host": [
+								"localhost"
+							],
+							"port": "3333",
+							"path": [
+								"points"
+							],
+							"query": [
+								{
+									"key": "city",
+									"value": "Campinas"
+								},
+								{
+									"key": "uf",
+									"value": "SP"
+								},
+								{
+									"key": "items",
+									"value": "1,2,3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lista ponto de coleta por id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:3333/points/14",
+							"host": [
+								"localhost"
+							],
+							"port": "3333",
+							"path": [
+								"points",
+								"14"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
 }
