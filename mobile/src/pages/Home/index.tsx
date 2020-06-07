@@ -40,8 +40,8 @@ const Home = () => {
       .get<IBGEUFResponse[]>(
         'https://servicodados.ibge.gov.br/api/v1/localidades/estados',
       )
-      .then((response) => {
-        const ufInitials = response.data.map((uf) => ({
+      .then(response => {
+        const ufInitials = response.data.map(uf => ({
           label: uf.nome,
           value: uf.sigla,
         }));
@@ -61,8 +61,8 @@ const Home = () => {
       .get<IBGECityResponse[]>(
         `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUf}/municipios`,
       )
-      .then((response) => {
-        const cityName = response.data.map((city) => ({
+      .then(response => {
+        const cityName = response.data.map(city => ({
           label: city.nome,
           value: city.nome,
         }));
@@ -84,11 +84,11 @@ const Home = () => {
 
   return (
     <KeyboardAvoidingView
-      style={{flex: 1}}
+      style={styles.keyboardContainer}
       behavior={Platform.select({ios: 'padding', android: undefined})}>
       <ImageBackground
         source={require('../../assets/home-background.png')}
-        imageStyle={{width: 274, height: 368}}
+        imageStyle={styles.imageBackground}
         style={styles.container}>
         <View style={styles.main}>
           <Image source={require('../../assets/logo.png')} />
@@ -108,7 +108,7 @@ const Home = () => {
           <View style={styles.containerPicker}>
             <RNPickerSelect
               value={selectedUf}
-              onValueChange={(value) => setSelectedUf(value)}
+              onValueChange={value => setSelectedUf(value)}
               placeholder={{label: 'Selecione o estado'}}
               items={ufs}
               Icon={() =>
@@ -122,7 +122,7 @@ const Home = () => {
           <View style={styles.containerPicker}>
             <RNPickerSelect
               value={selectedCity}
-              onValueChange={(value) => setSelectedCity(value)}
+              onValueChange={value => setSelectedCity(value)}
               placeholder={{label: 'Selecione uma Cidade'}}
               items={cities}
               Icon={() =>
@@ -148,6 +148,15 @@ const Home = () => {
 };
 
 const styles = StyleSheet.create({
+  keyboardContainer: {
+    flex: 1,
+  },
+
+  imageBackground: {
+    width: 274,
+    height: 368,
+  },
+
   container: {
     flex: 1,
     padding: 32,
@@ -161,7 +170,7 @@ const styles = StyleSheet.create({
   title: {
     color: '#322153',
     fontSize: 32,
-    fontFamily: 'Ubuntu_700Bold',
+    fontFamily: 'Ubuntu-Bold',
     maxWidth: 260,
     marginTop: 64,
   },
@@ -170,7 +179,7 @@ const styles = StyleSheet.create({
     color: '#6C6C80',
     fontSize: 16,
     marginTop: 16,
-    fontFamily: 'Roboto_400Regular',
+    fontFamily: 'Roboto-Regular',
     maxWidth: 260,
     lineHeight: 24,
   },
@@ -207,7 +216,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     textAlign: 'center',
     color: '#FFF',
-    fontFamily: 'Roboto_500Medium',
+    fontFamily: 'Roboto-Medium',
     fontSize: 16,
   },
   containerPicker: {

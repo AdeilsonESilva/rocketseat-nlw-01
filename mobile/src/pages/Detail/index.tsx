@@ -7,13 +7,13 @@ import {
   Text,
   SafeAreaView,
   Linking,
+  Alert,
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {RectButton} from 'react-native-gesture-handler';
 import api from '../../services/api';
-// import * as MailComposer from 'expo-mail-composer';
 
 interface RouteParams {
   point_id: number;
@@ -42,7 +42,7 @@ const Detail = () => {
   const {point_id} = route.params as RouteParams;
 
   useEffect(() => {
-    api.get(`points/${point_id}`).then((response) => {
+    api.get(`points/${point_id}`).then(response => {
       setData(response.data);
     });
   }, [point_id]);
@@ -51,12 +51,24 @@ const Detail = () => {
     navigation.goBack();
   };
 
-  const handleComposeMail = () => {
-    // TODO refactor
-    // MailComposer.composeAsync({
-    //   subject: 'Interesse na coleta de resíduos',
-    //   recipients: [data.point.email],
-    // });
+  const handleComposeMail = async () => {
+    const url = `mailto:${data.point.email}?subject=Interesse na coleta de resíduos`;
+
+    try {
+      // check if we can use this link
+      const canOpen = await Linking.canOpenURL(url);
+
+      if (!canOpen) {
+        throw new Error('Provided URL can not be handled');
+      }
+
+      return Linking.openURL(url);
+    } catch (error) {
+      Alert.alert(
+        'Ooooops....',
+        'Ocorreu um erro ao enviar e-mail, tente novamente',
+      );
+    }
   };
 
   const handleWhatsapp = () => {
@@ -70,7 +82,7 @@ const Detail = () => {
   }
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={styles.safeContainer}>
       <View style={styles.container}>
         <TouchableOpacity onPress={handleNavigateBack}>
           <Icon name="arrow-left" size={20} color="#34cb79" />
@@ -80,7 +92,7 @@ const Detail = () => {
 
         <Text style={styles.pointName}>{data.point.name}</Text>
         <Text style={styles.pointItems}>
-          {data.items.map((item) => item.title).join(', ')}
+          {data.items.map(item => item.title).join(', ')}
         </Text>
 
         <View style={styles.address}>
@@ -107,6 +119,10 @@ const Detail = () => {
 };
 
 const styles = StyleSheet.create({
+  safeContainer: {
+    flex: 1,
+  },
+
   container: {
     flex: 1,
     padding: 32,
@@ -124,12 +140,12 @@ const styles = StyleSheet.create({
   pointName: {
     color: '#322153',
     fontSize: 28,
-    fontFamily: 'Ubuntu_700Bold',
+    fontFamily: 'Ubuntu-Bold',
     marginTop: 24,
   },
 
   pointItems: {
-    fontFamily: 'Roboto_400Regular',
+    fontFamily: 'Roboto-Regular',
     fontSize: 16,
     lineHeight: 24,
     marginTop: 8,
@@ -142,12 +158,12 @@ const styles = StyleSheet.create({
 
   addressTitle: {
     color: '#322153',
-    fontFamily: 'Roboto_500Medium',
+    fontFamily: 'Roboto-Medium',
     fontSize: 16,
   },
 
   addressContent: {
-    fontFamily: 'Roboto_400Regular',
+    fontFamily: 'Roboto-Regular',
     lineHeight: 24,
     marginTop: 8,
     color: '#6C6C80',
@@ -176,7 +192,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     color: '#FFF',
     fontSize: 16,
-    fontFamily: 'Roboto_500Medium',
+    fontFamily: 'Roboto-Medium',
   },
 });
 

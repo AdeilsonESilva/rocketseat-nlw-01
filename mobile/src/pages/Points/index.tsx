@@ -8,12 +8,12 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-  Alert,
   SafeAreaView,
+  Platform,
 } from 'react-native';
-import MapView, {Marker} from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import {SvgUri} from 'react-native-svg';
-// import * as Location from 'expo-location';
+import Geolocation from '@react-native-community/geolocation';
 import api from '../../services/api';
 
 interface Item {
@@ -48,164 +48,148 @@ const Points = () => {
   const route = useRoute();
   const routeParams = route.params as Params;
 
-  // TODO refactor
-  // useEffect(() => {
-  //   const loadPosition = async () => {
-  //     const {status} = await Location.requestPermissionsAsync();
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      Geolocation.requestAuthorization();
+    }
 
-  //     if (status !== 'granted') {
-  //       Alert.alert(
-  //         'Ooooops....',
-  //         'Precisamos da sua permissão para obter a localização',
-  //       );
-  //       return;
-  //     }
+    Geolocation.getCurrentPosition(info => {
+      const {latitude, longitude} = info.coords;
+      setInitialPosition([latitude, longitude]);
+    });
+  }, []);
 
-  //     const location = await Location.getCurrentPositionAsync();
-
-  //     const {latitude, longitude} = location.coords;
-
-  //     setInitialPosition([latitude, longitude]);
-  //   };
-
-  //   loadPosition();
-  // }, []);
+  useEffect(() => {
+    api.get('items').then(response => {
+      setItems(response.data);
+    });
+  }, []);
 
   useEffect(() => {
     api
-      .get('items')
-      .then((response) => {
-        console.log('response.data', response.data);
-        setItems(response.data);
+      .get('points', {
+        params: {
+          city: routeParams.city,
+          uf: routeParams.uf,
+          items: selectedItems,
+        },
       })
-      .catch((error) => {
-        console.log('error', JSON.stringify(error));
+      .then(response => {
+        setPoints(response.data);
       });
-  }, []);
+  }, [routeParams.city, routeParams.uf, selectedItems]);
+
+  const handleNavigateBack = () => {
+    navigation.goBack();
+  };
+
+  const handleNavigateToDetail = (point_id: number) => {
+    navigation.navigate('Detail', {point_id});
+  };
+
+  const handleSelectedItems = (id: number) => {
+    const alreadySelected = selectedItems.findIndex(item => item === id);
+
+    if (alreadySelected >= 0) {
+      const filteredItem = selectedItems.filter(item => item !== id);
+
+      if (filteredItem) {
+        setSelectedItems(filteredItem);
+      }
+    } else {
+      setSelectedItems([...selectedItems, id]);
+    }
+  };
 
   return (
-    <View>
-      <Text>ade</Text>
-    </View>
+    <SafeAreaView style={styles.safeContainer}>
+      <View style={styles.container}>
+        <TouchableOpacity activeOpacity={0.6} onPress={handleNavigateBack}>
+          <Icon name="arrow-left" size={20} color="#34cb79" />
+        </TouchableOpacity>
+
+        <Text style={styles.title}>Bem vindo.</Text>
+        <Text style={styles.description}>
+          Encontre no mapa um ponto de coleta.
+        </Text>
+
+        <View style={styles.mapContainer}>
+          {initialPosition[0] !== 0 && (
+            <MapView
+              provider={PROVIDER_GOOGLE}
+              style={styles.map}
+              loadingEnabled={initialPosition[0] === 0}
+              initialRegion={{
+                latitude: initialPosition[0],
+                longitude: initialPosition[1],
+                latitudeDelta: 0.014,
+                longitudeDelta: 0.014,
+              }}>
+              {points.map(point => (
+                <Marker
+                  key={String(point.id)}
+                  onPress={() => handleNavigateToDetail(point.id)}
+                  style={styles.mapMarker}
+                  coordinate={{
+                    latitude: point.latitude,
+                    longitude: point.longitude,
+                  }}>
+                  <View style={styles.mapMarkerContainer}>
+                    <Image
+                      style={styles.mapMarkerImage}
+                      source={{uri: point.image_url}}
+                    />
+                    <Text style={styles.mapMarkerTitle}>{point.name}</Text>
+                  </View>
+                </Marker>
+              ))}
+            </MapView>
+          )}
+        </View>
+      </View>
+
+      <View style={styles.itemsContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}>
+          {items.map(item => (
+            <TouchableOpacity
+              key={String(item.id)}
+              style={[
+                styles.item,
+                selectedItems.indexOf(item.id) >= 0 ? styles.selectedItem : {},
+              ]}
+              onPress={() => handleSelectedItems(item.id)}
+              activeOpacity={0.6}>
+              <SvgUri width={42} height={42} uri={item.image_url} />
+              <Text style={styles.itemTitle}>{item.title}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
-
-  // useEffect(() => {
-  //   api
-  //     .get('points', {
-  //       params: {
-  //         city: routeParams.city,
-  //         uf: routeParams.uf,
-  //         items: selectedItems,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       setPoints(response.data);
-  //     });
-  // }, [routeParams.city, routeParams.uf, selectedItems]);
-
-  // const handleNavigateBack = () => {
-  //   navigation.goBack();
-  // };
-
-  // const handleNavigateToDetail = (point_id: number) => {
-  //   navigation.navigate('Detail', {point_id});
-  // };
-
-  // const handleSelectedItems = (id: number) => {
-  //   const alreadySelected = selectedItems.findIndex((item) => item === id);
-
-  //   if (alreadySelected >= 0) {
-  //     const filteredItem = selectedItems.filter((item) => item !== id);
-
-  //     if (filteredItem) {
-  //       setSelectedItems(filteredItem);
-  //     }
-  //   } else {
-  //     setSelectedItems([...selectedItems, id]);
-  //   }
-  // };
-
-  // return (
-  //   <SafeAreaView style={{flex: 1}}>
-  //     <View style={styles.container}>
-  //       <TouchableOpacity activeOpacity={0.6} onPress={handleNavigateBack}>
-  //         <Icon name="arrow-left" size={20} color="#34cb79" />
-  //       </TouchableOpacity>
-
-  //       <Text style={styles.title}>Bem vindo.</Text>
-  //       <Text style={styles.description}>
-  //         Encontre no mapa um ponto de coleta.
-  //       </Text>
-
-  //       <View style={styles.mapContainer}>
-  //         {initialPosition[0] !== 0 && (
-  //           <MapView
-  //             style={styles.map}
-  //             loadingEnabled={initialPosition[0] === 0}
-  //             initialRegion={{
-  //               latitude: initialPosition[0],
-  //               longitude: initialPosition[1],
-  //               latitudeDelta: 0.014,
-  //               longitudeDelta: 0.014,
-  //             }}>
-  //             {points.map((point) => (
-  //               <Marker
-  //                 key={String(point.id)}
-  //                 onPress={() => handleNavigateToDetail(point.id)}
-  //                 style={styles.mapMarker}
-  //                 coordinate={{
-  //                   latitude: point.latitude,
-  //                   longitude: point.longitude,
-  //                 }}>
-  //                 <View style={styles.mapMarkerContainer}>
-  //                   <Image
-  //                     style={styles.mapMarkerImage}
-  //                     source={{uri: point.image_url}}
-  //                   />
-  //                   <Text style={styles.mapMarkerTitle}>{point.name}</Text>
-  //                 </View>
-  //               </Marker>
-  //             ))}
-  //           </MapView>
-  //         )}
-  //       </View>
-  //     </View>
-
-  //     <View style={styles.itemsContainer}>
-  //       <ScrollView
-  //         horizontal
-  //         showsHorizontalScrollIndicator={false}
-  //         contentContainerStyle={{paddingHorizontal: 20}}>
-  //         {items.map((item) => (
-  //           <TouchableOpacity
-  //             key={String(item.id)}
-  //             style={[
-  //               styles.item,
-  //               // TODO refactor
-  //               // selectedItems.includes(item.id) ? styles.selectedItem : {},
-  //             ]}
-  //             onPress={() => handleSelectedItems(item.id)}
-  //             activeOpacity={0.6}>
-  //             <SvgUri width={42} height={42} uri={item.image_url} />
-  //             <Text style={styles.itemTitle}>{item.title}</Text>
-  //           </TouchableOpacity>
-  //         ))}
-  //       </ScrollView>
-  //     </View>
-  //   </SafeAreaView>
-  // );
 };
 
 const styles = StyleSheet.create({
+  safeContainer: {
+    flex: 1,
+  },
+
+  scrollContent: {
+    paddingHorizontal: 20,
+  },
+
   container: {
     flex: 1,
     paddingHorizontal: 32,
-    paddingTop: 20,
+    paddingTop: 50,
   },
 
   title: {
     fontSize: 20,
-    fontFamily: 'Ubuntu_700Bold',
+    fontFamily: 'Ubuntu-Bold',
     marginTop: 24,
   },
 
@@ -213,7 +197,7 @@ const styles = StyleSheet.create({
     color: '#6C6C80',
     fontSize: 16,
     marginTop: 4,
-    fontFamily: 'Roboto_400Regular',
+    fontFamily: 'Roboto-Regular',
   },
 
   mapContainer: {
@@ -252,7 +236,7 @@ const styles = StyleSheet.create({
 
   mapMarkerTitle: {
     flex: 1,
-    fontFamily: 'Roboto_400Regular',
+    fontFamily: 'Roboto-Regular',
     color: '#FFF',
     fontSize: 13,
     lineHeight: 23,
@@ -287,7 +271,7 @@ const styles = StyleSheet.create({
   },
 
   itemTitle: {
-    fontFamily: 'Roboto_400Regular',
+    fontFamily: 'Roboto-Regular',
     textAlign: 'center',
     fontSize: 13,
   },
